@@ -52,7 +52,7 @@ export default function NotesClient() {
         </button>
       </header>
 
-      {isLoading && <p>Loading...</p>}
+      {/* {isLoading && <p>Loading...</p>} */}
       {isError && <p>Error loading notes</p>}
 
       {!isLoading && !isError && <NoteList notes={notes} />}

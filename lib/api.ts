@@ -4,9 +4,6 @@ import type { Note } from "../types/note";
 
 const BASE_URL = "https://notehub-public.goit.study/api";
 const TOKEN = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
-if (!TOKEN) {
-  console.warn("❗ TOKEN не найден — API будет выдавать 403");
-}
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -39,7 +36,9 @@ export async function fetchNotes({
   const params = new URLSearchParams();
   params.append("page", String(page));
   params.append("perPage", String(perPage));
-  params.append("search", search);
+  if (search.trim()) {
+    params.append("search", search.trim());
+  }
 
   const res: AxiosResponse<FetchNotesResponse> = await api.get(
     `/notes?${params.toString()}`

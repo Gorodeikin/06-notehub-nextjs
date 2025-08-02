@@ -4,7 +4,7 @@ import type { Note } from "../types/note";
 
 const BASE_URL = "https://notehub-public.goit.study/api";
 const TOKEN = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
-console.log("TOKEN:", TOKEN);
+console.log("Loaded token:", TOKEN);
 
 const api = axios.create({
   baseURL: BASE_URL,

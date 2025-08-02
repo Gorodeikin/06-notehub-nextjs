@@ -19,6 +19,7 @@ export default function NotesClient() {
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [hasLoaded, setHasLoaded] = useState(false); // <-- сюда
 
   const [debouncedSearch] = useDebounce(search, 500);
 
@@ -32,21 +33,21 @@ export default function NotesClient() {
     staleTime: 1000 * 60 * 5,
   });
 
+  useEffect(() => {
+    if (!isLoading && !isError && data) {
+      setHasLoaded(true);
+    }
+  }, [isLoading, isError, data]);
+
   const notes = data?.notes ?? [];
   const totalPages = data?.totalPages ?? 1;
 
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox
-          value={search}
-          onChange={(val: string) => setSearch(val)}
-        />
+        <SearchBox value={search} onChange={(val: string) => setSearch(val)} />
 
-        <button
-          className={css.button}
-          onClick={() => setIsModalOpen(true)}
-        >
+        <button className={css.button} onClick={() => setIsModalOpen(true)}>
           Create note +
         </button>
       </header>
@@ -57,14 +58,10 @@ export default function NotesClient() {
       {!isLoading && !isError && <NoteList notes={notes} />}
 
       {totalPages > 1 && (
-        <Pagination
-          currentPage={page}
-          onPageChange={(p: number) => setPage(p)}
-          totalPages={totalPages}
-        />
+        <Pagination currentPage={page} onPageChange={(p: number) => setPage(p)} totalPages={totalPages} />
       )}
 
-      {!isLoading && isFetching && <p className={css.loadingMore}>Updating...</p>}
+      {hasLoaded && isFetching && <p className={css.loadingMore}>Updating...</p>}
 
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}>

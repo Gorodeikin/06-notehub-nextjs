@@ -64,7 +64,7 @@ export default function NotesClient() {
         />
       )}
 
-      {isFetching && <p className={css.loadingMore}>Updating...</p>}
+      {!isLoading && isFetching && <p className={css.loadingMore}>Updating...</p>}
 
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}>

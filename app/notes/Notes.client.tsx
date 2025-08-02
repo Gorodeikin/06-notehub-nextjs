@@ -8,7 +8,7 @@ import NoteList from "@/components/NoteList/NoteList";
 import NoteForm from "@/components/NoteForm/NoteForm";
 import Pagination from "@/components/Pagination/Pagination";
 import SearchBox from "@/components/SearchBox/SearchBox";
-import Modal from "@/components/NoteModal/Modal";
+import Modal from "@/components/Modal/Modal";
 
 import { fetchNotes } from "@/lib/api";
 import type { NormalizedFetchNotesResponse } from "@/lib/api";

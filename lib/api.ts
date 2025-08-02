@@ -1,6 +1,5 @@
-import axios from "axios";
-import type { AxiosResponse } from "axios";
-import type { Note } from "../types/note";
+import axios, { AxiosResponse } from "axios";
+import type { Note, NotesPageData } from "@/types/note";
 
 const BASE_URL = "https://notehub-public.goit.study/api";
 const TOKEN = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
@@ -18,21 +17,11 @@ export interface FetchNotesParams {
   search?: string;
 }
 
-export interface FetchNotesResponse {
-  notes: Note[];
-  totalPages: number;
-}
-
-export interface NormalizedFetchNotesResponse extends FetchNotesResponse {
-  page: number;
-  perPage: number;
-}
-
 export async function fetchNotes({
   page = 1,
   perPage = 12,
   search = "",
-}: FetchNotesParams): Promise<NormalizedFetchNotesResponse> {
+}: FetchNotesParams): Promise<NotesPageData> {
   const params = new URLSearchParams();
   params.append("page", String(page));
   params.append("perPage", String(perPage));
@@ -40,7 +29,7 @@ export async function fetchNotes({
     params.append("search", search.trim());
   }
 
-  const res: AxiosResponse<FetchNotesResponse> = await api.get(
+  const res: AxiosResponse<Omit<NotesPageData, "page" | "perPage">> = await api.get(
     `/notes?${params.toString()}`
   );
 
@@ -64,6 +53,7 @@ export async function deleteNote(id: string): Promise<Note> {
 }
 
 export async function fetchNoteById(id: string): Promise<Note> {
-    const res: AxiosResponse<Note> = await api.get(`/notes/${id}`);
-    return res.data;
+  const res: AxiosResponse<Note> = await api.get(`/notes/${id}`);
+  return res.data;
 }
+

@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import css from "@/components/NoteModal/NoteModal.module.css";
+import css from "@/components/Modal/NoteModal.module.css";
 
 interface ModalProps {
   children: React.ReactNode;
   onClose: () => void;
+  isOpen: boolean;
 }
 
-export default function Modal({ children, onClose }: ModalProps) {
+export default function Modal({ children, onClose, isOpen }: ModalProps) {
   const [modalRoot, setModalRoot] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -25,6 +26,8 @@ export default function Modal({ children, onClose }: ModalProps) {
     document.addEventListener("keydown", handleEsc);
     return () => document.removeEventListener("keydown", handleEsc);
   }, [onClose]);
+
+  if (!isOpen) return null;
 
   if (!modalRoot) return null;
 

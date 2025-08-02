@@ -1,34 +1,24 @@
 "use client";
 
-import { HydrationBoundary, useQuery, DehydratedState } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api";
-import type { Note } from "@/types/note";
-import css from "./NoteDetails.module.css";
+
+import css from "@/app/notes/[id]/NoteDetails.module.css"
 
 interface NoteDetailsClientProps {
-  noteId: string;
-  dehydratedState?: DehydratedState | null;
+  id: string;
 }
 
-export default function NoteDetailsClient({
-  noteId,
-  dehydratedState,
-}: NoteDetailsClientProps) {
-  return (
-    <HydrationBoundary state={dehydratedState}>
-      <NoteDetailsContent noteId={noteId} />
-    </HydrationBoundary>
-  );
-}
-
-function NoteDetailsContent({ noteId }: { noteId: string }) {
-  const { data, isLoading, isError } = useQuery<Note>({
-    queryKey: ["note", noteId],
-    queryFn: () => fetchNoteById(noteId),
+export default function NoteDetailsClient({ id }: NoteDetailsClientProps) {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["note", id],
+    queryFn: () => fetchNoteById(id),
+    refetchOnMount: false,
   });
 
-  if (isLoading) return <p>Loading note details...</p>;
-  if (isError || !data) return <p>Failed to load note.</p>;
+  if (isLoading) return <p>Loading note...</p>;
+  if (isError) return <p>Error: {(error as Error).message}</p>;
+  if (!data) return <p>No note found.</p>;
 
   return (
     <div className={css.container}>
@@ -44,5 +34,4 @@ function NoteDetailsContent({ noteId }: { noteId: string }) {
     </div>
   );
 }
-
 

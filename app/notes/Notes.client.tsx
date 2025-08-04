@@ -16,7 +16,6 @@ function useDebounce<T>(value: T, delay: number): T {
 
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedValue(value), delay);
-
     return () => clearTimeout(handler);
   }, [value, delay]);
 
@@ -35,13 +34,19 @@ export default function NotesClient({ initialNotes, totalPages }: NotesClientPro
 
   const debouncedSearch = useDebounce(search, 300);
 
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
   const { data } = useQuery({
     queryKey: ["notes", page, debouncedSearch],
     queryFn: () => fetchNotes({ page, perPage: 12, search: debouncedSearch }),
-    initialData: page === 1 && debouncedSearch === ""
-      ? { notes: initialNotes, totalPages, page: 1, perPage: 12 }
-      : undefined,
-    refetchOnMount: false,
+    initialData: 
+      page === 1 && debouncedSearch === ""
+        ? { notes: initialNotes, totalPages, page: 1, perPage: 12 }
+        : undefined,
+      placeholderData: (prev) => prev,
+      refetchOnMount: false,
   });
 
   const notes = data?.notes ?? [];
@@ -55,11 +60,19 @@ export default function NotesClient({ initialNotes, totalPages }: NotesClientPro
           Create note +
         </button>
       </header>
-      <NoteList notes={notes} />
-      <Pagination currentPage={page} totalPages={pages} onPageChange={setPage} />
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <NoteForm onClose={() => setIsModalOpen(false)} />
-      </Modal>
+      {notes.length > 0 ? (
+        <NoteList notes={notes} />
+      ) : (
+        <p className={css.message}>No notes found.</p>
+      )}
+      {pages > 1 && (
+        <Pagination currentPage={page} totalPages={pages} onPageChange={setPage} />
+      )}
+      {isModalOpen && (
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <NoteForm onClose={() => setIsModalOpen(false)} />
+        </Modal>
+      )}
     </>
   );
 }
